@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <title>D3 Practice - PIE</title>
+  </head>
+  <body>
+    <script type="text/javascript">
+
+      var data=[{name:"Sweden",stat:10},{name:"Ice land",stat:20},{name:"Moon",stat:30},{name:"Sun",stat:5}];
+
+      var canvas=d3.select("body").append("svg").attr('width',900).attr('height',650)
+      .append("g").attr("transform","translate(500,350)");
+
+      var arc=d3.arc()
+              .innerRadius(0)
+              .outerRadius(200);
+
+      var pie=d3.pie().value(function(d){return d.stat;})
+
+      var color=d3.scaleOrdinal(['blue','green','yellow','red']);
+
+      var chart=canvas.selectAll("arc").data(pie(data)).enter().append("g").attr('class','arc');
+
+      chart.append('path').attr("fill",function(d,i){return color(i)}).attr("d",arc);
+
+
+
+
+      chart.append("text")
+            .attr("transform", function(d) {
+              var ar=arc.centroid(d);
+              ar[0]=ar[0]-20;
+              console.log(ar[0]);
+                return "translate(" + ar + ")";
+                })
+            .text(function(d) { return d.data.name; }).style("font-family","cursive");
+
+    </script>
+  </body>
+</html>

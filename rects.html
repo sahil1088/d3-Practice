@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <title>D3 Practice - RECT</title>
+  </head>
+  <body>
+    <script type="text/javascript">
+      //Data
+      var data=[10,200,30,150,44,73,100,320,30];
+
+      //Canvas
+      var canvas=d3.select('body').append("svg")
+      .attr('width',500).attr('height',500).style("background","#f4f4f4");
+
+
+    //Y-Scale & X-Scale
+      var yscale=d3.scaleLinear()
+                  .domain([0,d3.max(data)])
+                  .range([0,500]);
+      var xscale=d3.scaleBand()
+                  .domain(d3.range(0,data.length))
+                  .range([0,475]);
+
+
+        //Text on top of each bar
+        d3.select("svg").selectAll("text").data(data).enter().append("text").text(function(d){
+          return d;
+        }).attr("transform",
+        function(d,i){return "translate("+(xscale(i)+25)+","+(500-yscale(d)-21)+")";});
+
+
+      //Bars
+      var rectangles=canvas.selectAll('rect').data(data).enter()
+      .append('rect').attr('width',xscale.bandwidth())
+      .attr('height',0)
+      .attr('y',function(d){return 500-20;})
+      .attr('x',function(d,i){return xscale(i)+25;})
+//trnasition
+     .transition()
+      .attr('height',function(d){return yscale(d)})
+      .attr('y',function(d){return 500-yscale(d)-20;})
+      .attr('x',function(d,i){return xscale(i)+25;})
+      .style('fill',function(d,i){
+          if(d<=10) return "green";
+          if(d>10&&d<50) return "yellow";
+          if(d>50&&d<200) return "orange";
+          if(d>=200) return "red";
+        })
+        .duration(500);
+
+      //Axes
+      var xaxis=d3.axisBottom().scale(xscale);
+      var vscale=d3.scaleLinear()
+                  .domain([0,d3.max(data)])
+                  .range([500,0]);
+      var yaxis=d3.axisLeft().scale(vscale).ticks(20);
+
+
+      d3.select("svg").append('g').attr("transform","translate(25,480)").call(xaxis);
+      d3.select("svg").append('g').attr("transform","translate(25,-20)").call(yaxis);
+
+
+canvas.append("text").attr("transform","translate(150,40)").text("Sample Chart").style('font-family','fantasy').style('font-size',"30px");
+    </script>
+  </body>
+</html>

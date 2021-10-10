@@ -9,7 +9,9 @@
     <script type="text/javascript">
 
       var data=[{name:"Sweden",stat:10},{name:"Ice land",stat:20},{name:"Moon",stat:30},{name:"Sun",stat:5}];
-
+      var ar=data.map(function(i){
+        return i.stat;
+      });console.log(ar);
       var canvas=d3.select("body").append("svg").attr('width',900).attr('height',650)
       .append("g").attr("transform","translate(500,350)");
 
@@ -31,12 +33,35 @@
       chart.append("text")
             .attr("transform", function(d) {
               var ar=arc.centroid(d);
-              ar[0]=ar[0]-20;
+              ar[0]=ar[0]-50;ar[1]=ar[1]-40;
               console.log(ar[0]);
                 return "translate(" + ar + ")";
                 })
-            .text(function(d) { return d.data.name; }).style("font-family","cursive");
+            .text(function(d)
+             {
+               var s=d3.sum(ar);
+               console.log(s);
+                return d.data.name;
+
+              }).style("font-family","cursive");
+
+
+              chart.append("text")
+                    .attr("transform", function(d) {
+                      var ar=arc.centroid(d);
+                      ar[0]=ar[0]-40;ar[1]=ar[1]-20;
+                      console.log(ar[0]);
+                        return "translate(" + ar + ")";
+                        })
+                    .text(function(d)
+                     {
+                       var s=d3.sum(ar);
+                       console.log(s);
+                        return "("+((d.data.stat*100/s).toFixed(2))+"%)";
+
+                      }).style("font-family","cursive");
 
     </script>
   </body>
 </html>
+

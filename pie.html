@@ -3,17 +3,26 @@
   <head>
     <meta charset="utf-8">
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
     <title>D3 Practice - PIE</title>
   </head>
   <body>
     <script type="text/javascript">
 
+
+
+
+
       var data=[{name:"Sweden",stat:10},{name:"Ice land",stat:20},{name:"Moon",stat:30},{name:"Sun",stat:5}];
       var ar=data.map(function(i){
         return i.stat;
-      });console.log(ar);
+      });
       var canvas=d3.select("body").append("svg").attr('width',900).attr('height',650)
       .append("g").attr("transform","translate(500,350)");
+
+      var tip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
 
       var arc=d3.arc()
               .innerRadius(0)
@@ -23,7 +32,9 @@
 
       var color=d3.scaleOrdinal(['blue','green','yellow','red']);
 
-      var chart=canvas.selectAll("arc").data(pie(data)).enter().append("g").attr('class','arc');
+      var chart=canvas.selectAll("arc").data(pie(data)).enter().append("g")
+.attr('class','arc').style("opacity",1).on("mouseover",function(){d3.select(this).style("opacity",0.6)})
+.on("mouseout",function(){d3.select(this).style("opacity",1)});
 
       chart.append('path').attr("fill",function(d,i){return color(i)}).attr("d",arc);
 
@@ -64,4 +75,3 @@
     </script>
   </body>
 </html>
-

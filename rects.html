@@ -7,7 +7,7 @@
 <script src="https://unpkg.com/d3-v6-tip@1.0.6/build/d3-v6-tip.js"></script>
     <title>D3 Practice - RECT</title>
   </head>
-  <body>
+<body>
     <style>
     .d3-tip {
       line-height: 1;
@@ -15,70 +15,87 @@
       background: rgba(0, 0, 0, 0.8);
       color: #fff;
       border-radius: 4px;
-      font-size: 12px;
+      font-size: 15px;
+      font-family:inherit;
     }
     </style>
-
     <script type="text/javascript">
       //Data
-
       var data=[10,200,30,150,44,73,100,320,30];
 
       //Canvas
       var canvas=d3.select('body').append("svg")
-      .attr('width',500).attr('height',500).style("background","#f4f4f4");
+                   .attr('width',500).attr('height',500).style("background","#f4f4f4");
 
 
-    //Y-Scale & X-Scale
+      //Y-Scale & X-Scale
       var yscale=d3.scaleLinear()
-                  .domain([0,d3.max(data)])
-                  .range([0,500]);
+                 .domain([0,d3.max(data)])
+                 .range([0,500]);
       var xscale=d3.scaleBand()
-                  .domain(d3.range(0,data.length))
-                  .range([0,475]);
+                 .domain(d3.range(0,data.length))
+                 .range([0,475]);
 
 
-        //Text on top of each bar
-        d3.select("svg").selectAll("text").data(data).enter().append("text").text(function(d){
-          return d;
-        }).attr("transform",
-        function(d,i){return "translate("+(xscale(i)+25)+","+(500-yscale(d)-21)+")";});
+            //Text on top of each bar
+            /*  d3.select("svg").selectAll("text").data(data).enter().append("text").text(function(d){
+            return d;
+            }).attr("transform",
+            function(d,i){return "translate("+(xscale(i)+25)+","+(500-yscale(d)-21)+")";});
+            */
 
-      //Bars
+
+      //Tool Tip
+      var tool_tip = d3.select("body").append("div").attr("class","d3-tip")
+                    .style("border","0").style("border-radius","8px").style("position","absolute")
+                    .style("background","black").style('color','white')
+                    .style("visibility","hidden");
+
+
+      //Rectangular Graphs
       var rectangles=canvas.selectAll('rect').data(data).enter()
-      .append('rect').attr('width',xscale.bandwidth())
-      .attr('height',0)
-      .attr('y',function(d){return 500-20;})
-      .attr('x',function(d,i){return xscale(i)+25;}).on("mouseover",function(){d3.select(this).style("opacity",0.5)})
-      .on("mouseout",function(){d3.select(this).style("opacity",1)})
+                    .append("rect")
+                    .attr('width',xscale.bandwidth())
+                    .attr('height',0)
+                    .attr('y',function(d){return 500-20;})
+                    .attr('x',function(d,i){return xscale(i)+25;})
+                    .on("mouseover",function(event,d)
+                    {
+                      tool_tip.html(d).style("left", (event.pageX) + "px").style("top", (event.pageY-20) + "px")
+                      .style("visibility","visible");
+                      d3.select(this).style("opacity",0.5);
+                      //console.log(event);
+                    })
+                    .on("mouseout",function(){
+                      tool_tip.html('').style("visibility","hidden");
+                      d3.select(this).style("opacity",1)
+                    })
+                    //transition
+                    .transition()
+                        .attr('height',function(d){return yscale(d)})
+                        .attr('y',function(d){return 500-yscale(d)-20;})
+                        .attr('x',function(d,i){return xscale(i)+25;})
+                        .style('fill',function(d,i){
+                          if(d<=10) return "green";
+                          if(d>10&&d<50) return "yellow";
+                          if(d>50&&d<200) return "orange";
+                          if(d>=200) return "red";
+                        }).style("opacity",1).duration(500)
 
-//trnasition
-     .transition()
-      .attr('height',function(d){return yscale(d)})
-      .attr('y',function(d){return 500-yscale(d)-20;})
-      .attr('x',function(d,i){return xscale(i)+25;})
-      .style('fill',function(d,i){
-          if(d<=10) return "green";
-          if(d>10&&d<50) return "yellow";
-          if(d>50&&d<200) return "orange";
-          if(d>=200) return "red";
-        }).style("opacity",1).duration(500)
 
-
-
-      //Axes
+      //Axes-Initialization
       var xaxis=d3.axisBottom().scale(xscale);
       var vscale=d3.scaleLinear()
                   .domain([0,d3.max(data)])
                   .range([500,0]);
       var yaxis=d3.axisLeft().scale(vscale).ticks(20);
 
-
+      //Axes-Calling
       d3.select("svg").append('g').attr("transform","translate(25,480)").call(xaxis);
       d3.select("svg").append('g').attr("transform","translate(25,-20)").call(yaxis);
 
-
-canvas.append("text").attr("transform","translate(150,40)").text("Sample Chart").style('font-family','fantasy').style('font-size',"30px");
+      //Title of the chart
+      canvas.append("text").attr("transform","translate(150,40)").text("Sample Chart").style('font-family','fantasy').style('font-size',"30px");
     </script>
   </body>
 </html>

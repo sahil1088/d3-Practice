@@ -36,7 +36,8 @@
       .append('rect').attr('width',xscale.bandwidth())
       .attr('height',0)
       .attr('y',function(d){return 500-20;})
-      .attr('x',function(d,i){return xscale(i)+25;})
+      .attr('x',function(d,i){return xscale(i)+25;}).on("mouseover",function(){d3.select(this).style("opacity",1)})
+      .on("mouseout",function(){d3.select(this).style("opacity",0.6)})
 //trnasition
      .transition()
       .attr('height',function(d){return yscale(d)})

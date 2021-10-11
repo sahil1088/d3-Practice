@@ -7,11 +7,18 @@
     <title>D3 Practice - PIE</title>
   </head>
   <body>
+    <style>
+    .d3-tip {
+      line-height: 1;
+      padding: 6px;
+      background: steelblue;
+      color: #000020;
+      border-radius: 4px;
+      font-size: 25px;
+      font-family:inherit;
+    }
+    </style>
     <script type="text/javascript">
-
-
-
-
 
       var data=[{name:"Sweden",stat:10},{name:"Ice land",stat:20},{name:"Moon",stat:30},{name:"Sun",stat:5}];
       var ar=data.map(function(i){
@@ -21,8 +28,8 @@
       .append("g").attr("transform","translate(500,350)");
 
       var tip = d3.select("body").append("div")
-    .attr("class", "tooltip")
-    .style("opacity", 0);
+    .attr("class", "d3-tip")
+    .style("visibility","hidden").style("border","0").style("position","absolute");
 
       var arc=d3.arc()
               .innerRadius(0)
@@ -33,25 +40,26 @@
       var color=d3.scaleOrdinal(['blue','green','yellow','red']);
 
       var chart=canvas.selectAll("arc").data(pie(data)).enter().append("g")
-.attr('class','arc').style("opacity",1).on("mouseover",function(){d3.select(this).style("opacity",0.6)})
-.on("mouseout",function(){d3.select(this).style("opacity",1)});
+.attr('class','arc').style("opacity",1).on("mouseover",function(event,d)
+{
+  console.log(d)
+  tip.html(d.data.stat).style("left",(event.pageX-30)+"px").style("top",(event.pageY-30)+"px").style("visibility","visible")
+  d3.select(this).style("opacity",0.5)})
+.on("mouseout",function(){
+  tip.style("visibility","hidden")
+  d3.select(this).style("opacity",1)});
 
       chart.append('path').attr("fill",function(d,i){return color(i)}).attr("d",arc);
-
-
-
 
       chart.append("text")
             .attr("transform", function(d) {
               var ar=arc.centroid(d);
               ar[0]=ar[0]-50;ar[1]=ar[1]-40;
-              console.log(ar[0]);
                 return "translate(" + ar + ")";
                 })
             .text(function(d)
              {
                var s=d3.sum(ar);
-               console.log(s);
                 return d.data.name;
 
               }).style("font-family","cursive");
@@ -61,13 +69,11 @@
                     .attr("transform", function(d) {
                       var ar=arc.centroid(d);
                       ar[0]=ar[0]-40;ar[1]=ar[1]-20;
-                      console.log(ar[0]);
                         return "translate(" + ar + ")";
                         })
                     .text(function(d)
                      {
                        var s=d3.sum(ar);
-                       console.log(s);
                         return "("+((d.data.stat*100/s).toFixed(2))+"%)";
 
                       }).style("font-family","cursive");

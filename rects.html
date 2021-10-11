@@ -3,11 +3,25 @@
   <head>
     <meta charset="utf-8">
     <script src="https://d3js.org/d3.v7.min.js"></script>
+
+<script src="https://unpkg.com/d3-v6-tip@1.0.6/build/d3-v6-tip.js"></script>
     <title>D3 Practice - RECT</title>
   </head>
   <body>
+    <style>
+    .d3-tip {
+      line-height: 1;
+      padding: 6px;
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    </style>
+
     <script type="text/javascript">
       //Data
+
       var data=[10,200,30,150,44,73,100,320,30];
 
       //Canvas
@@ -30,14 +44,14 @@
         }).attr("transform",
         function(d,i){return "translate("+(xscale(i)+25)+","+(500-yscale(d)-21)+")";});
 
-
       //Bars
       var rectangles=canvas.selectAll('rect').data(data).enter()
       .append('rect').attr('width',xscale.bandwidth())
       .attr('height',0)
       .attr('y',function(d){return 500-20;})
-      .attr('x',function(d,i){return xscale(i)+25;}).on("mouseover",function(){d3.select(this).style("opacity",1)})
-      .on("mouseout",function(){d3.select(this).style("opacity",0.6)})
+      .attr('x',function(d,i){return xscale(i)+25;}).on("mouseover",function(){d3.select(this).style("opacity",0.5)})
+      .on("mouseout",function(){d3.select(this).style("opacity",1)})
+
 //trnasition
      .transition()
       .attr('height',function(d){return yscale(d)})
@@ -48,8 +62,9 @@
           if(d>10&&d<50) return "yellow";
           if(d>50&&d<200) return "orange";
           if(d>=200) return "red";
-        })
-        .duration(500);
+        }).style("opacity",1).duration(500)
+
+
 
       //Axes
       var xaxis=d3.axisBottom().scale(xscale);

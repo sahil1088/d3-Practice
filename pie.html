@@ -8,6 +8,20 @@
   </head>
   <body>
     <style>
+    .legend{
+      position:absolute;
+      background: #FFFFF;
+      color:black;  padding: 6px;
+      border-radius: 4px;
+      border-color:black;
+      border-width: 2px;
+      border-style: none;
+      left:350px;
+      top:500px;
+      width:800px;
+      height:30px;
+
+    }
     .d3-tip {
       line-height: 1;
       padding: 6px;
@@ -20,12 +34,13 @@
     </style>
     <script type="text/javascript">
 
+
       var data=[{name:"Sweden",stat:10},{name:"Ice land",stat:20},{name:"Moon",stat:30},{name:"Sun",stat:5}];
       var ar=data.map(function(i){
         return i.stat;
       });
       var canvas=d3.select("body").append("svg").attr('width',900).attr('height',650)
-      .append("g").attr("transform","translate(500,350)");
+      .append("g").attr("transform","translate(500,250)");
 
       var tip = d3.select("body").append("div")
     .attr("class", "d3-tip")
@@ -40,10 +55,11 @@
       var color=d3.scaleOrdinal(['blue','green','yellow','red']);
 
       var chart=canvas.selectAll("arc").data(pie(data)).enter().append("g")
-.attr('class','arc').style("opacity",1).on("mouseover",function(event,d)
+.attr('class','arc').style("opacity",1)
+.on("mouseover",function(event,d)
 {
-  console.log(d)
-  tip.html(d.data.stat).style("left",(event.pageX-30)+"px").style("top",(event.pageY-30)+"px").style("visibility","visible")
+  tip.html('Number of people : '+d.data.stat).style("left",(event.pageX-30)+"px").style("top",(event.pageY-30)+"px").style("visibility","visible")
+  .style('font-size',"15px")
   d3.select(this).style("opacity",0.5)})
 .on("mouseout",function(){
   tip.style("visibility","hidden")
@@ -77,6 +93,16 @@
                         return "("+((d.data.stat*100/s).toFixed(2))+"%)";
 
                       }).style("font-family","cursive");
+        var colors=[{color:"blue",data:"Ok"},{color:"yellow",data:"Good"},{color:"green",data:"Excellent"},{color:"red",data:"Outstanding"}];
+        var legend=d3.select("body").append("svg").attr("class","legend").selectAll('.legenditem').data(colors);
+        legend.enter().append("rect").attr("class","legenditem").attr("width",10)
+        .attr("height",10).attr("transform",function(d,i){console.log(i);
+          return "translate("+(i*80)+","+10+")";
+        }).style("fill",(d)=>d.color)
+
+        legend.enter().append("text").text((d)=>d.data).attr("transform",function(d,i){console.log(i);
+          return "translate("+(i*80+12)+","+20+")";
+        })
 
     </script>
   </body>

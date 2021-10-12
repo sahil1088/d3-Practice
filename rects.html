@@ -4,11 +4,24 @@
     <meta charset="utf-8">
     <script src="https://d3js.org/d3.v7.min.js"></script>
 
-<script src="https://unpkg.com/d3-v6-tip@1.0.6/build/d3-v6-tip.js"></script>
     <title>D3 Practice - RECT</title>
   </head>
 <body>
     <style>
+    .legend{
+      position:absolute;
+      background: rgba(70,130,180,0.2);
+      color:black;  padding: 6px;
+      border-radius: 4px;
+      border-color:black;
+      border-width: 2px;
+      border-style: solid;
+      left:550px;
+      top:100px;
+      width:120px;
+      height:90px;
+
+    }
     .d3-tip {
       line-height: 1;
       padding: 6px;
@@ -24,25 +37,21 @@
       var data=[10,200,30,150,44,73,100,320,30];
 
       //Canvas
-      var canvas=d3.select('body').append("svg")
-                   .attr('width',500).attr('height',500).style("background","#f4f4f4");
+      var w=800,h=650;
+      var svg=d3.select('body').append("svg")
+                   .attr('width',w).attr('height',h)//.style('background',"#f4f4f4")
+                   .attr("transform","translate(50)")
+
+      var canvas=svg.selectAll('rect').data(data);
 
 
       //Y-Scale & X-Scale
       var yscale=d3.scaleLinear()
                  .domain([0,d3.max(data)])
-                 .range([0,500]);
+                 .range([0,w-400]);
       var xscale=d3.scaleBand()
                  .domain(d3.range(0,data.length))
-                 .range([0,475]);
-
-
-            //Text on top of each bar
-            /*  d3.select("svg").selectAll("text").data(data).enter().append("text").text(function(d){
-            return d;
-            }).attr("transform",
-            function(d,i){return "translate("+(xscale(i)+25)+","+(500-yscale(d)-21)+")";});
-            */
+                 .range([0,w-400]);
 
 
       //Tool Tip
@@ -53,12 +62,12 @@
 
 
       //Rectangular Graphs
-      var rectangles=canvas.selectAll('rect').data(data).enter()
+      var rectangles=canvas.enter()
                     .append("rect")
                     .attr('width',xscale.bandwidth())
                     .attr('height',0)
-                    .attr('y',function(d){return 500-20;})
-                    .attr('x',function(d,i){return xscale(i)+25;})
+                    .attr('y',function(d){return 480;})
+                    .attr('x',function(d,i){return xscale(i)+25;}).attr("transform","translate(60,20)")
                     .on("mouseover",function(event,d)
                     {
                       tool_tip.html(d).style("left", (event.pageX) + "px").style("top", (event.pageY-20) + "px")
@@ -73,7 +82,7 @@
                     //transition
                     .transition()
                         .attr('height',function(d){return yscale(d)})
-                        .attr('y',function(d){return 500-yscale(d)-20;})
+                        .attr('y',function(d){return 480-yscale(d);})
                         .attr('x',function(d,i){return xscale(i)+25;})
                         .style('fill',function(d,i){
                           if(d<=10) return "green";
@@ -82,20 +91,36 @@
                           if(d>=200) return "red";
                         }).style("opacity",1).duration(500)
 
+      //legends
+
+      var colors=[{color:"green",data:"Safe"},{color:"yellow",data:"Acceptable"},{color:"orange",data:"Risky"},{color:"red",data:"Dangerous"}];
+      var legend=d3.select("body").append("svg").attr("class","legend").selectAll('.legenditem').data(colors)
+
+      legend.enter().append("circle")
+                   .attr("class","legenditem").attr('r',5).attr('cx',10).attr('cy',15).attr("transform",function(d,i){
+                     return "translate("+0+","+(i*20)+")";
+                   }).style('fill', d => d.color)
+
+      legend.enter().append("text").attr('x',18).attr('y',function(d,i){return i*20;}).text(d => d.data)
+      .attr("transform","translate(0,20)")
 
       //Axes-Initialization
+      var hscale=d3.scaleBand()
+                 .domain(d3.range(0,data.lengt))
+                 .range([0,w-325]);
       var xaxis=d3.axisBottom().scale(xscale);
       var vscale=d3.scaleLinear()
                   .domain([0,d3.max(data)])
-                  .range([500,0]);
+                  .range([h-250,0]);
       var yaxis=d3.axisLeft().scale(vscale).ticks(20);
 
       //Axes-Calling
-      d3.select("svg").append('g').attr("transform","translate(25,480)").call(xaxis);
-      d3.select("svg").append('g').attr("transform","translate(25,-20)").call(yaxis);
+      d3.select("svg").append('g').attr("transform","translate("+(25+60)+","+(20+480)+")").call(xaxis);
+      d3.select("svg").append('g').attr("transform","translate("+(25+60)+","+(20+80)+")").call(yaxis);
 
       //Title of the chart
-      canvas.append("text").attr("transform","translate(150,40)").text("Sample Chart").style('font-family','fantasy').style('font-size',"30px");
+      svg.append("text").attr("transform","translate(250,40)").text("Sample Chart").style('font-family','fantasy').style('font-size',"30px");
+
     </script>
   </body>
 </html>

@@ -134,23 +134,26 @@
                        if(d>=200) return 1;
                      }
        }
-      legend.enter().append("text").attr('x',18).attr('y',function(d,i){return i*20;}).text(d => d.data)
+      var legen=legend.enter().append("text").attr('x',18).attr('y',function(d,i){return i*20;}).text(d => d.data)
                 .attr("id",function(d){return d.data;}).attr("value","false")
-                .attr("transform","translate(0,20)")
-                .on("mouseover",function(){
+                .attr("transform","translate(0,20)");
+
+      var func1=legen.on("mouseover",function(){
                   d3.select(this).style("text-decoration","underline")
                 })
                 .on("mouseout",function(){
                   d3.select(this).style("text-decoration","none");
-                })
-                .on("click",function(event,d){
+                });
+      var func2=func1.on("click",function(event,d){
                   var c = d.color;
                   var el=document.getElementById(d.data);
                   //console.log(el)
                   var flag=el.hasAttribute("value");
+                  console.log(flag);
                   if(flag==true){
                     d3.selectAll("text").style("fill","black");
                     d3.select(this).style("fill","red");
+                    func1.attr("value","false");
                     el.removeAttribute("value");
                     rectangles.style("opacity",function(d){return f(d,c);}).on("mouseout",function(event,d){
                         tool_tip.html('').style("visibility","hidden");
@@ -159,18 +162,19 @@
                   }
                   else{
                     d3.selectAll("text").style("fill","black");
+                    el.setAttribute("value","false");
                     rectangles.style("opacity",function(d){
-                      if(c=="green"){
+
                         if(d<=10) return 1;
                         if(d>10&&d<50) return 1;
                         if(d>50&&d<200) return 1;
                         if(d>=200) return 1;
-                      }
+
                     }).on("mouseout",function(event,d){
                         tool_tip.html('').style("visibility","hidden");
                         d3.select(this).style("opacity",1);
                     })
-                    el.setAttribute("value","false");
+
                   }
                 })
 
@@ -190,10 +194,6 @@
 
       //Title of the chart
       svg.append("text").attr("transform","translate(250,40)").text("Sample Chart").style('font-family','fantasy').style('font-size',"30px");
-
-
-      var el=document.getElementsByClassName("green")
-      console.log(el)
     </script>
   </body>
 </html>
